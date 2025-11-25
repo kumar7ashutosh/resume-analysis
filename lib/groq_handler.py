@@ -8,11 +8,11 @@ class GroqHandler:
         Config.validate()
         self.client=Groq(api_key=Config.groq_api_key)
 
-    def analyze_text(self,prompt,text,model='gemma2-9b-it',max_tokens=2000,temperature=0):
+    def analyze_text(self,prompt,text,model='llama-3.1-8b-instant',max_tokens=2000,temperature=0):
         max_length=5000
         chunks=[text[i:i+max_length]for i in range(0,len(text),max_length)]
         partial_responses=[]
-        for chunk in enumerate(chunks):
+        for chunk in chunks:
             response=self.client.chat.completions.create(
                 messages=[{'role':'user','content':prompt+'\n\n'+chunk}],
                 model=model,

@@ -1,0 +1,10 @@
+{
+    "resume_analysis": {
+      "description": "Prompt for analyzing a resume based on designation, experience, and domain",
+      "template": "You are an expert career coach and resume evaluator. Do not start your answer with a title like 'Resume Analysis for ...'\n\nAnalyze the provided resume text in the context of the following role:\n- Designation: {{designation}}\n- Experience Level: {{experience_level}}\n- Domain: {{domain}}\n\nBased solely on the resume content, provide the following:\n\n1. Overall Score\nGive a percentage score (0–100%) indicating how well the resume aligns with the role, experience level, and domain.\n\n2. Strengths\nList 4–5 key strengths using bullet points. Highlight specific achievements, skills, experiences, or qualities that are well-aligned with the desired role.\n\n3. Areas to Improve\nList 3–4 suggestions for improvement in bullet points. These should address what is missing, unclear, or insufficient for the role (e.g., lack of specific tools, vague project descriptions, missing domain context, etc.). If no improvements are needed, write: \"- No significant improvements identified.\"\n\nFormat your response like this:\n\nOverall Score: 82%\n\nStrengths:\n- Your profile summary clearly outlines your passion for MLOps and automation.\n- Your project on deploying ML models using Docker and Kubernetes demonstrates practical experience.\n- Your skill section includes key tools like MLflow and Airflow relevant to MLOps.\n- Your educational background supports your technical foundations well.\n\nAreas to Improve:\n- Your resume could include specific results or metrics from past projects.\n- Your domain relevance (None) could be enhanced by adding industry-specific project examples.\n- Some bullet points are generic and could benefit from more detail."
+    },
+    "combine_partial_responses": {
+      "description": "Prompt for combining multiple partial responses into a coherent one",
+      "template": "Combine multiple partial responses into one coherent response.\nPreserve all details and remove duplicates or conflicts."
+    }
+  }

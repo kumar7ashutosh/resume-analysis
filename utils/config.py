@@ -4,8 +4,8 @@ load_dotenv()
 
 class Config:
     groq_api_key=os.getenv('GROQ_API_KEY')
-    log_dir='data/logs'
-    prompts_file='data/prompts.json'
+    LOG_DIR='data/logs'
+    PROMPTS_FILE='data_dir/prompts.json'
     
     @staticmethod
     def validate():
