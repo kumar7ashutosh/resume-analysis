@@ -1,4 +1,4 @@
-import flitz
+import fitz
 from docx import Document
 
 class Textprocessor:
@@ -6,7 +6,7 @@ class Textprocessor:
         self.logger=logger
     
     def extract_text_from_pdf(self,pdf_path):
-        doc=flitz.open(pdf_path)
+        doc=fitz.open(pdf_path)
         text='\n'.join([page.get_text('text') for page in doc])
         doc.close()
         return text
