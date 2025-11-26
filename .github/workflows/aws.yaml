@@ -10,7 +10,7 @@ jobs:
 
     env:
       IMAGE_TAG: ${{ github.sha }}
-      ECR_REPO: resumeanalyzer-repo
+      ECR_REPO: resume-ecr
 
     steps:
       - name: Checkout code
