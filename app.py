@@ -2,6 +2,8 @@ import sys
 import os
 import streamlit as st
 
+
+
 from lib.groq_handler import GroqHandler
 from lib.text_processor import Textprocessor
 from lib.resume_analyzer import ResumeAnalyzer
@@ -10,10 +12,9 @@ from utils.logger import setup_logger
 from utils.config import Config
 from utils.prompt_loader import Promptloader
 
-# --------------------------
-# Logger Setup
-# --------------------------
+# Singleton logger setup (runs only once)
 if 'loggers' not in st.session_state:
+    Config.validate()  # Validate config once
     st.session_state.loggers = {
         "app": setup_logger("app", f"{Config.LOG_DIR}/app.log"),
         "groq_handler": setup_logger("groq_handler", f"{Config.LOG_DIR}/groq_handler.log"),
@@ -25,15 +26,10 @@ if 'loggers' not in st.session_state:
 
 loggers = st.session_state.loggers
 
-# --------------------------
-# Initialize components (cached)
-# --------------------------
+# Cache components to prevent re-initialization
 @st.cache_resource
-def get_groq_handler():
-    api_key = st.secrets.get("GROQ_API_KEY")
-    if not api_key:
-        raise ValueError("GROQ_API_KEY not found in Streamlit secrets")
-    return GroqHandler(loggers["groq_handler"], Promptloader(Config.PROMPTS_FILE, loggers["prompt_loader"]), api_key=api_key)
+def get_grok_handler():
+    return GroqHandler(loggers["groq_handler"], Promptloader(Config.PROMPTS_FILE, loggers["prompt_loader"]))
 
 @st.cache_resource
 def get_text_processor():
@@ -43,14 +39,15 @@ def get_text_processor():
 def get_resume_analyzer(_grok_handler):
     return ResumeAnalyzer(_grok_handler, loggers["resume_analyzer"], Promptloader(Config.PROMPTS_FILE, loggers["prompt_loader"]))
 
-grok_handler = get_groq_handler()
+# Initialize components (cached)
+grok_handler = get_grok_handler()
 text_processor = get_text_processor()
 resume_analyzer = get_resume_analyzer(grok_handler)
 
-# --------------------------
-# Main Streamlit app
-# --------------------------
+
+
 def main():
+    """Main function to run the Streamlit Resume Analyzer app."""
     if 'page' not in st.session_state:
         st.session_state.page = "upload"
     if 'analysis' not in st.session_state:
@@ -58,16 +55,12 @@ def main():
     if 'processed' not in st.session_state:
         st.session_state.processed = False
 
-    # --------------------------
-    # Upload Page
-    # --------------------------
     if st.session_state.page == "upload":
         st.title("Resume Analyzer")
         st.subheader("Upload a PDF or Word Resume")
 
         uploaded_file = st.file_uploader("Upload Resume", type=["pdf", "docx"])
         col1, col2, col3 = st.columns(3)
-
         with col1:
             designation = st.selectbox("Select Desired Designation", ["Data Scientist", "Data Analyst", "MLOps Engineer"])
         with col2:
@@ -83,22 +76,18 @@ def main():
             st.session_state.domain = domain
             st.session_state.page = "results"
             st.session_state.processed = False
-            st.experimental_rerun()
+            st.rerun()
 
-    # --------------------------
-    # Results Page
-    # --------------------------
     elif st.session_state.page == "results":
         uploaded_file = st.session_state.uploaded_file
         file_extension = uploaded_file.name.split(".")[-1].lower()
         temp_path = f"temp_resume.{file_extension}"
 
         try:
-            if not st.session_state.processed:
+            if not st.session_state.processed:  # Process only once
                 loggers["app"].debug("Processing uploaded file: %s", uploaded_file.name)
                 with open(temp_path, "wb") as f:
                     f.write(uploaded_file.getbuffer())
-
                 extracted_text = text_processor.extract_text(temp_path, file_extension)
                 remove_files(temp_path)
 
@@ -120,7 +109,7 @@ def main():
                     st.session_state.page = "upload"
                     st.session_state.analysis = None
                     st.session_state.processed = False
-                    st.experimental_rerun()
+                    st.rerun()
 
                 st.markdown("# Resume Analysis")
                 st.write(st.session_state.analysis)
