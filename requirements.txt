@@ -3,4 +3,3 @@ pymupdf
 python-docx
 python-dotenv
 streamlit
-fitz
